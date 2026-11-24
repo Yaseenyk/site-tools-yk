@@ -1,0 +1,1508 @@
+# StreamerOS Dev Tools: full site text
+
+> The readable text of every public page on https://tools.streamerosai.com, built by Yaseen Khatib, Full Stack AI Developer, Hyderabad, India
+> (https://yk.streamerosai.com/). The short map is at https://tools.streamerosai.com/llms.txt.
+
+
+---
+
+# StreamerOS Dev Tools: free JSON, Base64 and developer tools
+
+URL: https://tools.streamerosai.com/
+
+- 100% in-browser
+- No sign-up
+- Free
+
+## Developer tools that run in your browser
+
+Format, validate, compare and convert JSON, and encode Base64, without sending your data anywhere.
+Open JSON Formatter Read the guides
+
+Tools
+
+### Everything you need for JSON and Base64
+
+#### JSON Formatter & Beautifier
+
+Pretty-print JSON with 2 or 4 spaces or tabs, sort keys, and see errors with line and column.
+Open tool →
+
+#### JSON Viewer
+
+Browse JSON as a collapsible tree and copy the path to any value.
+Open tool →
+
+#### JSON Validator
+
+Know instantly whether your JSON is valid, and where it breaks if it is not.
+Open tool →
+
+#### JSON Minifier
+
+Strip whitespace to make JSON smaller for APIs, config and storage.
+Open tool →
+
+#### JSON Compare (JSON Diff)
+
+Paste two JSON documents and see every added, removed and changed value by path.
+Open tool →
+
+#### JSON to CSV Converter
+
+Turn a JSON array of objects into a CSV you can open in Excel or Google Sheets.
+Open tool →
+
+#### Base64 Encode & Decode
+
+Encode or decode Base64 with full UTF-8 and URL-safe support.
+Open tool →
+
+#### Base64 Decode
+
+Paste a Base64 string and get the text back, with padding and URL-safe input handled.
+Open tool →
+
+Why these
+
+### Built to be trusted with real data
+
+#### Private by design
+
+Every tool runs in your browser. What you paste is never uploaded, logged or stored.
+
+#### Instant
+
+No sign-up, no queue and no server round trip. Results appear as you work.
+
+#### Errors you can act on
+
+Invalid input points to the exact line and column, and each guide explains the fix.
+
+Guides
+
+### Understand the formats behind the tools
+
+#### Why JSON.parse fails: the 6 errors behind most invalid JSON
+
+Trailing commas, single quotes, comments and the other mistakes, with a fix for each.
+Read guide →
+
+#### What Base64 is and when to use it
+
+How the encoding works, why it grows data by a third, and why it is not encryption.
+Read guide →
+
+About
+
+### How these tools are meant to be used
+
+Paste text, read the result, copy it out. The formatter, validator, viewer, minifier and compare tools all use the same strict JSON parser that your own code uses, so a document that passes here will pass JSON.parse in a browser or in Node.js. Where a document fails, the tools report the line and column of the first error rather than a vague message, and the guides explain the usual causes. The Base64 tools encode text as UTF-8 and handle the URL-safe variant and missing padding. Nothing you paste is sent anywhere; the privacy policy says exactly what the site does record, which is page-level visit statistics only.
+
+
+---
+
+# JSON Formatter & Pretty Print Online (Free, Private)
+
+URL: https://tools.streamerosai.com/json-formatter/
+
+Free · runs in your browser
+
+## JSON Formatter & Beautifier
+
+Paste JSON and make it readable in one click. It runs in your browser, so nothing you paste is uploaded, and any error shows its line and column.
+Input
+Output
+
+Indent 2 spaces 4 spaces Tab Sort keys
+Paste JSON above, or load the sample.
+
+### What a JSON formatter does
+
+A JSON formatter, also called a beautifier or pretty printer, rewrites JSON with line breaks and indentation so you can see its structure. JSON does not care about spaces between its tokens, so formatted and unformatted JSON describe the same data. The opposite job, removing the whitespace, is done by the JSON minifier.
+
+### How to format JSON
+
+- Paste your JSON into the Input box, or press Sample to try it.
+- Press Format (or Ctrl/Cmd + Enter). Choose 2 spaces, 4 spaces or tabs first if you have a house style.
+- Tick Sort keys if you want stable alphabetical order, then press Copy.
+If the input is invalid, the status bar shows the parser&#x27;s message with the line and column. The guide to the six most common JSON errors covers each fix, and the JSON validator lists the messages and their causes.
+
+### Before and after
+
+{"user":{"id":1042,"roles":["admin","editor"]},"active":true} becomes
+{
+"user": {
+"id": 1042,
+"roles": [
+"admin",
+"editor"
+]
+},
+"active": true
+} With Sort keys ticked, the same input starts with "active" and then "user", because the keys are put in alphabetical order at every depth.
+
+### What else the formatter changes
+
+The tool reads your text into a JavaScript value and writes it back out. For almost all JSON that gives the same data with new whitespace. A few inputs come back different, because a JavaScript value cannot hold everything the JSON text can:
+In your text In the output Why
+1.0, 1e2, 0.10 1, 100, 0.1 Numbers are written in their shortest form. The value is the same.
+-0 0 The sign of zero is not written.
+12345678901234567890 12345678901234567000 The number is held as a 64-bit float and loses digits above 2^53.
+1E400 null Too large for a 64-bit float, so it becomes infinity, which is written as null.
+"é", "\/" "é", "/" Escapes that are not required are written as the plain character.
+{"b":1,"2":2,"1":4} {"1":4,"2":2,"b":1} JavaScript puts whole-number keys first, in ascending order.
+{"a":1,"a":2} {"a":2} A repeated key keeps only its last value.
+If an exact digit string or the exact key order matters, do not round-trip the document through any JavaScript-based formatter. Keep long IDs as strings in the source.
+
+### Format JSON in code
+
+JavaScript, in a browser or Node:
+const text = &#x27;{"user":{"id":1042,"roles":["admin","editor"]},"active":true}&#x27;;
+console.log(JSON.stringify(JSON.parse(text), null, 2)); The third argument is the indent: a number of spaces, or a string such as a tab. Python, from the standard library:
+import json
+
+text = &#x27;{"user":{"id":1042,"roles":["admin","editor"]},"active":true}&#x27;
+print(json.dumps(json.loads(text), indent=2, ensure_ascii=False)) ensure_ascii=False keeps accented letters and emoji as they are instead of writing \uXXXX escapes. Add sort_keys=True to sort the keys. Python keeps whole-number keys in their original order, unlike JavaScript, and reads large integers exactly.
+On the command line, Python ships a formatter. It indents with 4 spaces unless you say otherwise:
+python -m json.tool in.json
+python -m json.tool --indent 2 --sort-keys in.json
+cat in.json | python -m json.tool To use Node instead, read standard input:
+node -e &#x27;console.log(JSON.stringify(JSON.parse(require("fs").readFileSync(0, "utf8")), null, 2))&#x27; < in.json
+
+### Limits of this tool
+
+- It reads standard JSON only. Comments, trailing commas, single quotes and unquoted keys are errors, not something it repairs.
+- It formats one JSON document. A file with one JSON value per line (JSON Lines) fails with Unexpected non-whitespace character after JSON; format each line on its own.
+- You paste text. There is no file upload and no size cap, but a very large paste is slow.
+- Everything runs in your browser. The tool&#x27;s code does not send what you paste anywhere; see the privacy policy for the analytics the site does run.
+
+### What counts as valid JSON
+
+JSON is stricter than a JavaScript object literal. Keys and strings use double quotes, there are no trailing commas and no comments, and the only values are objects, arrays, strings, numbers, true, false and null. The format is defined in RFC 8259. The full list of rules, with the error message for each, is on the JSON validator page. To browse a large document without reading it all, use the JSON viewer.
+
+### Sources
+
+- RFC 8259, The JavaScript Object Notation (JSON) Data Interchange Format (grammar, numbers, repeated names), checked 16 November 2026.
+- MDN: JSON.stringify() (the indent argument, how Infinity becomes null), checked 16 November 2026.
+- MDN: JSON.parse() (precision loss for large numbers), checked 16 November 2026.
+- Python documentation: json (dumps options, the json.tool command), checked 16 November 2026.
+The table of rewritten values was produced by running the same steps the tool uses, JSON.parse then JSON.stringify, in Node 22.
+
+### Frequently asked questions
+
+How do I pretty print JSON?
+Paste it into the Input box and press Format. The JSON is re-indented with 2 spaces, 4 spaces or tabs, with each key and array item on its own line. Pretty printing changes the layout, not the structure. A few values are rewritten as a side effect; the section on what else the formatter changes lists them.
+
+Is my JSON uploaded anywhere?
+No. Parsing and formatting run in your browser with JavaScript&#x27;s built-in JSON parser, and the page&#x27;s code makes no network request with your text. The site does run page-level analytics, described in the privacy policy, but that does not include what you paste.
+
+What is the difference between formatting and validating?
+Validating only tells you whether the text is legal JSON. Formatting also rewrites it with consistent indentation so a person can read it. Formatting only works on valid JSON, so a format that fails is also a validation failure.
+
+What does Sort keys do?
+It rewrites every object with its keys in alphabetical order, at every depth. Arrays keep their order. Sorted output makes two documents much easier to compare line by line.
+
+Why did the order of my keys change?
+JavaScript lists keys that look like whole numbers (such as "1" or "42") first, in ascending order, and the other keys after them in their original order. Because the tool formats through a JavaScript object, {"b":1,"2":2,"1":4} comes out as {"1":4,"2":2,"b":1}. Key order carries no meaning in JSON, but it can matter to a text diff.
+
+Why does formatting change my big numbers?
+JavaScript reads JSON numbers as 64-bit floats, so integers larger than 9,007,199,254,740,991 can lose precision: 12345678901234567890 is written back as 12345678901234567000. RFC 8259 says integers in the range of plus or minus (2^53 minus 1) are the ones every implementation will agree on. If you handle IDs that large, keep them as strings.
+
+Why does the formatter say my JSON is invalid when it works in my code?
+Most likely it is a JavaScript object literal, not JSON. Object literals can have unquoted keys, single quotes, trailing commas, comments and values like undefined. JSON allows none of these. The error message shows the line and column of the first problem.
+
+Can I format JSON with comments or trailing commas?
+No. Comments and trailing commas are not part of JSON, so the tool reports an error and does not guess. Remove them first. Formats such as JSONC and JSON5 allow them, but this tool reads standard JSON only.
+
+Is there a size limit?
+This page sets none. Documents of tens of megabytes may be slow because everything runs in your browser&#x27;s memory.
+
+### Related tools
+
+JSON Viewer JSON Validator JSON Minifier JSON Compare (JSON Diff)
+
+Last reviewed 2026-11-16.
+
+
+---
+
+# JSON Viewer: View JSON as a Tree Online (Free, Private)
+
+URL: https://tools.streamerosai.com/json-viewer/
+
+Free · runs in your browser
+
+## JSON Viewer
+
+Paste JSON to browse it as a collapsible tree. Expand or collapse branches, click a key to copy its path, and see exactly where it is invalid if it is not.
+JSON
+Tree view The tree appears here.
+
+Paste JSON, or load the sample.
+
+### What a JSON viewer is for
+
+A JSON viewer draws a document as a tree: objects and arrays are branches you can open and close, and strings, numbers, booleans and null are the leaves. It answers the question “where is this value, and how is the data nested?” faster than scrolling through formatted text.
+
+### How to view JSON as a tree
+
+- Paste your JSON into the box, or press Sample to try it.
+- Open and close branches with the arrows, or use Expand all and Collapse all. A closed branch shows how many items it holds, for example 2 items.
+- Click any key to copy its path, for example $.orders[1].total.
+The first two levels start open. Lists longer than 100 items show the first 100, with a button to show more. The count above the tree is the number of nodes: every object, array and value, including the root.
+
+### Example
+
+{"user":{"id":1042,"roles":["admin","editor"],"first name":"Ada"},"orders":[{"total":12.5}]} Value Path copied when you click its key
+the whole document $
+1042 $.user.id
+"admin" $.user.roles[0]
+"Ada" $.user["first name"]
+12.5 $.orders[0].total
+
+### How the paths are written
+
+- $ is the root of the document.
+-.name follows an object key that is a plain identifier: letters, digits, underscore or dollar sign, not starting with a digit.
+- ["first name"] is used for any other key, such as one with a space, a hyphen or a leading digit. The key is written as a JSON string.
+- [0] is an array position, counted from zero.
+The paths follow the common JSONPath style, but JSONPath libraries differ in small ways, so check a copied path against the library you use. To use one in JavaScript or Python, swap $ for your variable name: data.user.roles[0] in JavaScript, or data["user"]["roles"][0] in Python.
+
+### Read values from JSON in code
+
+JavaScript. This lists every path in the same format the viewer copies, which is handy for finding a key in a document you cannot paste:
+function paths(value, path = "$", out = []) {
+out.push(path);
+if (Array.isArray(value)) {
+value.forEach((item, i) => paths(item, path + "[" + i + "]", out));
+} else if (value!== null && typeof value === "object") {
+for (const [key, item] of Object.entries(value)) {
+const next = /^[A-Za-z_$][\w$]*$/.test(key)? path + "." + key: path + "[" + JSON.stringify(key) + "]";
+paths(item, next, out);
+}
+}
+return out;
+}
+
+const doc = JSON.parse(&#x27;{"user":{"id":1042,"roles":["admin","editor"],"first name":"Ada"},"orders":[{"total":12.5}]}&#x27;);
+console.log(paths(doc).join("\n"));
+console.log(doc.user.roles[0], doc.orders[0].total, doc.user["first name"]); Python reads the same value by indexing the parsed result:
+import json
+
+data = json.loads(&#x27;{"user":{"id":1042,"roles":["admin","editor"]},"orders":[{"total":12.5}]}&#x27;)
+print(data["user"]["roles"][0], data["orders"][0]["total"])
+
+### Reading tips and limits
+
+- Strings are shown with their JSON quotes and escapes. An empty object or array shows as 0 items when closed.
+- Numbers are shown as JavaScript reads them, so very large integers are rounded and 1.0 shows as 1.
+- If a key is repeated in the text, the tree shows it once with the last value. If you need to find duplicates, check the source text.
+- The tree is read-only and has no search box or file upload. You paste text.
+- Everything runs in your browser. The tool&#x27;s code does not send what you paste anywhere; see the privacy policy for the analytics the site does run.
+
+### Tree view or formatted text?
+
+A tree is best for exploring: you can fold away what you do not need and see how the data is nested. Formatted text is best for reading a whole document top to bottom or for copying it. If you need the text, use the JSON formatter. To check syntax only, use the JSON validator. If the document will not parse, the guide to JSON parse errors explains the six mistakes behind most failures. To turn an array of records into a table, use JSON to CSV.
+
+### Sources
+
+- RFC 8259, The JavaScript Object Notation (JSON) Data Interchange Format (the value types, repeated names, number limits), checked 16 November 2026.
+- MDN: JSON.parse() (precision loss for large numbers), checked 16 November 2026.
+The path listing was produced by running the code above in Node 22 on the example document. How the tool writes paths and counts nodes comes from the tool&#x27;s own source.
+
+### Frequently asked questions
+
+What does a JSON viewer do?
+It shows JSON as an indented tree of objects and arrays that you can expand and collapse, so large or deeply nested documents are easy to read and navigate.
+
+How do I get the path to a value?
+Click its key in the tree. The path, such as $.user.roles[0], is copied to your clipboard. $ stands for the whole document, so in your own code replace it with the variable that holds the parsed JSON.
+
+Is my JSON uploaded anywhere?
+No. Parsing and drawing the tree happen in your browser, and the page&#x27;s code makes no network request with your text. The site does run page-level analytics, described in the privacy policy, but that does not include what you paste.
+
+Why does the viewer say my JSON is invalid?
+The status bar shows the parser&#x27;s message with the line and column. The usual causes are trailing commas, single quotes, unquoted keys and comments, which JSON does not allow. The JSON validator page lists each message and its fix.
+
+Can it handle large files?
+Yes, within your browser&#x27;s memory. Branches are drawn only when opened, and long lists show 100 items at a time, so very large documents stay responsive. You paste the text; there is no file upload.
+
+Can I edit the JSON in the tree?
+No. The tree is read-only. Edit the text in the JSON box and the tree redraws as you type. To tidy the text, use the JSON formatter.
+
+Can I search the tree?
+There is no search box. Press Expand all and use your browser&#x27;s find command (Ctrl or Cmd + F) to look for a key or value. Collapsed branches are not drawn, so the browser cannot find text inside them.
+
+Why do my keys appear in a different order from my text?
+JavaScript lists keys that look like whole numbers, such as "1" or "42", first in ascending order, then the others in their original order. The tree follows that order. A repeated key is shown once, with its last value.
+
+Why does a large number in my JSON look different in the tree?
+The number is read as a 64-bit float, so integers above 9,007,199,254,740,991 are rounded: 12345678901234567890 is shown as 12345678901234567000. Keep very large IDs as strings.
+
+### Related tools
+
+JSON Formatter & Beautifier JSON Validator JSON Compare (JSON Diff) JSON to CSV Converter
+
+Last reviewed 2026-11-16.
+
+
+---
+
+# JSON Validator: Check JSON Syntax Online
+
+URL: https://tools.streamerosai.com/json-validator/
+
+Free · runs in your browser
+
+## JSON Validator
+
+Paste JSON and see at once whether it is valid. If it is not, you get the line and column where the parser stopped. The check runs in your browser.
+Input
+Output
+
+Indent 2 spaces 4 spaces Tab Sort keys
+Paste JSON above, or load the sample.
+
+### What valid JSON means
+
+JSON is valid when the text follows the grammar in RFC 8259: one value made of objects, arrays, strings, numbers and the three words true, false and null. That is a question about syntax only. A validator does not know what your data should contain.
+This tool runs your text through JSON.parse, the parser your own JavaScript uses. The verdict updates as you type or paste, so you do not need to press anything: the status bar below the editor turns green for valid JSON, or red with the error message and the line and column.
+
+### How to validate JSON
+
+- Paste your text into the Input box.
+- Read the status bar. It says Valid JSON, or gives the message and position of the first error.
+- Fix that error and read the bar again. A parser stops at the first problem, so later ones appear one at a time.
+
+### The rules the grammar enforces
+
+Rule Valid Invalid
+Strings and keys use double quotes {"a":"b"} {&#x27;a&#x27;:&#x27;b&#x27;}
+Keys are quoted {"a":1} {a:1}
+No comma after the last item [1,2] [1,2,]
+No comments {"a":1} {"a":1 // note}
+Only true, false and null, in lowercase {"ok":true} {"ok":True}, undefined, NaN, Infinity
+Numbers: optional minus, no leading zero, digits after a point 0.5, -12, 1e3.5, +1, 01, 0x10, 1.
+Control characters inside a string are escaped "a\nb" a real line break or tab between the quotes
+Only the listed escapes are allowed \" \\ \/ \b \f \n \r \t A \x41
+Whitespace is space, tab, line feed or carriage return a normal indent a no-break space or a byte order mark
+One value, nothing after it {"a":1}, 42, null {"a":1} x, two documents in a row, empty text
+These are the same rules the guide to JSON parse errors explains one by one with fixes.
+
+### Common error messages and what they mean
+
+The wording below is what Node 22 prints, which uses the same JavaScript engine as Chrome and Edge. Older versions and other browsers word the same errors differently. When a browser gives no position, this page works one out itself by checking the text against the grammar, so you still get a line and column.
+Message Usual cause Fix
+Expected double-quoted property name A trailing comma in an object Delete the comma before the closing brace
+Expected property name or &#x27;}&#x27; Single quotes or an unquoted key right after the opening brace Put the key in double quotes
+Expected &#x27;,&#x27; or &#x27;}&#x27; after property value A missing comma, a comment, or a value the grammar does not allow Add the comma, or remove the comment
+Expected &#x27;,&#x27; or &#x27;]&#x27; after array element A missing comma, or an unclosed bracket Add the comma, or close the bracket
+Unexpected token &#x27;]&#x27;,... is not valid JSON A trailing comma in an array Delete the comma before the closing bracket
+Unexpected token &#x27;u&#x27;,... is not valid JSON undefined, NaN, True or another word JSON lacks (the letter in the message is the first one) Use null, or a lowercase true or false
+Unexpected number in JSON A number with a leading zero, such as 01 Remove the zero, or make the value a string
+Unterminated string in JSON A missing closing quote Add the quote
+Bad control character in string literal A raw line break or tab inside a string Write it as \n or \t
+Bad escaped character A backslash followed by a letter JSON does not allow, such as \x, or a Windows path with single backslashes Double the backslash: \\
+Unexpected end of JSON input Empty text, or text cut off before it closes Paste the whole document
+Unexpected non-whitespace character after JSON Extra text, or a second document, after the first Remove it, or validate each document separately
+
+### What a validator does and does not check
+
+Checked Not checked
+Brackets, braces and quotes balance That fields have the right type
+No trailing commas or comments That required keys exist
+Strings are escaped correctly That values are in an allowed range
+Only legal value types are used That keys are unique
+For a structural check, use a JSON Schema validator in your project. This page answers the earlier question: is the text JSON at all?
+Large numbers. A valid document can still lose data when it is read. RFC 8259 allows software to limit the range and precision of numbers, and says integers between minus and plus (2^53 minus 1) are the ones all implementations agree on. JavaScript parses numbers as 64-bit floats, so larger integers are rounded. Send very large IDs as strings.
+
+### Validate JSON in code
+
+JavaScript. A bad document throws a SyntaxError:
+function check(text) {
+try {
+JSON.parse(text);
+return "valid";
+} catch (err) {
+return err.message;
+}
+}
+
+console.log(check(&#x27;{"a":1,}&#x27;)); Python. The exception carries the line and column. Python&#x27;s parser also accepts NaN, Infinity and -Infinity by default, which are not JSON, so pass parse_constant to reject them:
+import json
+
+def check(text):
+try:
+json.loads(text)
+except json.JSONDecodeError as e:
+return f"{e.msg} at line {e.lineno}, column {e.colno}"
+return "valid"
+
+def reject_constant(name):
+raise ValueError(f"{name} is not valid JSON")
+
+print(check(&#x27;{"a":1,}&#x27;))
+# json.loads(text, parse_constant=reject_constant) now refuses NaN and Infinity On the command line, json.tool exits with status 1 and prints the error when the file is not valid (use NUL instead of /dev/null in Windows cmd). It has the same NaN leniency as the Python module.
+python -m json.tool data.json > /dev/null && echo valid
+
+### Limits of this tool
+
+- It checks syntax, not meaning, and it reports only the first error it meets.
+- It checks one document pasted as text. There is no file upload, and JSON Lines or several documents in a row are reported as an error.
+- It uses your browser&#x27;s own JSON.parse, so it agrees with your JavaScript code, but not necessarily with a lenient parser in another language.
+- Everything runs in your browser. The tool&#x27;s code does not send what you paste anywhere; see the privacy policy for the analytics the site does run.
+Once the JSON is valid, make it readable with the JSON formatter, explore it in the JSON viewer, or see what changed between two versions with JSON compare.
+
+### Sources
+
+- RFC 8259, The JavaScript Object Notation (JSON) Data Interchange Format (grammar, literal names, numbers, repeated names, byte order mark), checked 16 November 2026.
+- MDN: JSON.parse() (SyntaxError for text outside the grammar, trailing commas, single quotes), checked 16 November 2026.
+- Python documentation: json (JSONDecodeError, NaN and Infinity handling, the json.tool command), checked 16 November 2026.
+The error messages in the table were produced by running each input through JSON.parse in Node 22.
+
+### Frequently asked questions
+
+Does this validate against a JSON Schema?
+No. It checks syntax only: whether the text is legal JSON under RFC 8259. Checking that fields have the right types or required keys needs a schema validator.
+
+Why is JSON with duplicate keys reported as valid?
+The JSON grammar allows repeated keys, and JSON.parse accepts them, keeping the last value. RFC 8259 says names within an object SHOULD be unique and that software receiving duplicates behaves unpredictably, so treat them as a bug even though they are not a syntax error.
+
+Is my data sent to a server?
+No. The check runs in your browser using JavaScript&#x27;s JSON.parse, and the page&#x27;s code makes no network request with your text. The site does run page-level analytics, described in the privacy policy, but that does not include what you paste.
+
+Why does the line and column point after the real mistake?
+The parser reports where it gave up, which is at or just after the problem. A trailing comma, for example, is reported at the closing brace that follows it. Look one token back.
+
+Why does JSON that works in my JavaScript code fail here?
+Your code is probably an object literal, which is more relaxed than JSON. Unquoted keys, single quotes, trailing commas, comments and values such as undefined, NaN and Infinity are legal in JavaScript but not in JSON.
+
+Are NaN, Infinity and undefined valid JSON?
+No. RFC 8259 says numeric values that cannot be written in its grammar, such as Infinity and NaN, are not permitted, and the only literal names are true, false and null in lowercase. Python&#x27;s json module accepts NaN and Infinity by default, so JSON that passes there can fail here.
+
+Is a bare string, number or null valid JSON?
+Yes. Under RFC 8259 a JSON text is any JSON value, so "hello", 42 and null are each valid on their own. Older specifications required an object or array at the top level, and some old parsers still do.
+
+Why does valid-looking JSON from a file fail on its first character?
+The file may begin with a byte order mark, an invisible character some editors add. RFC 8259 says parsers may ignore it, but JSON.parse does not, and reports an unexpected token on the first character. Save the file as UTF-8 without a BOM, or delete the first character.
+
+Can it validate several JSON documents at once?
+No. It checks one document. Text with a second document after the first, such as JSON Lines, fails with an error about a non-whitespace character after the JSON. Check each line on its own.
+
+### Related tools
+
+JSON Formatter & Beautifier JSON Viewer JSON Compare (JSON Diff) Base64 Decode
+
+Last reviewed 2026-11-16.
+
+
+---
+
+# JSON Minifier: Minify & Compress JSON Online
+
+URL: https://tools.streamerosai.com/json-minifier/
+
+Free · runs in your browser
+
+## JSON Minifier
+
+Strip the whitespace from JSON to make it smaller. Paste, press Minify, and compare the sizes. It runs in your browser.
+Input
+Output
+
+Indent 2 spaces 4 spaces Tab Sort keys
+Paste JSON above, or load the sample.
+
+### What minifying JSON means
+
+Minifying JSON removes the spaces, tabs and line breaks between its tokens, leaving the shortest text that still means the same thing. The opposite job is the JSON formatter, which adds layout back.
+
+### How to minify JSON
+
+- Paste your JSON into the Input box.
+- Press Minify. If the JSON is invalid you will see the error instead, because only valid JSON can be minified.
+- Compare the input and output sizes shown above each box, then press Copy.
+
+### Example
+
+{
+"id": 7,
+"tags": [ "a", "b" ],
+"ok": true
+} minifies to
+{"id":7,"tags":["a","b"],"ok":true} The first text is 51 bytes and the second is 35, so 16 bytes of layout are gone. Only whitespace between tokens is removed; whitespace inside a string is data and stays.
+
+### How much does it save?
+
+It depends on how the original was indented and how much of it is keys and values rather than layout. As one measured example, a generated list of 100 records, each with an id, a name, a flag and two tags, indented with 2 spaces:
+Form Plain bytes After gzip
+Indented with 2 spaces 10,636 639
+Minified 5,735 570
+Minifying took off 46% of the plain text but only about 11% of the gzipped size, because gzip already squeezes out repeated whitespace. These records repeat the same keys, which is why gzip does so well here. Your data will give different numbers. This is the code that produced them, for Node:
+import { gzipSync } from "node:zlib";
+
+const rows = Array.from({ length: 100 }, (_, i) => ({
+id: i + 1,
+name: "user" + (i + 1),
+active: i % 2 === 0,
+tags: ["a", "b"],
+}));
+const pretty = JSON.stringify(rows, null, 2);
+const mini = JSON.stringify(rows);
+const bytes = (s) => new TextEncoder().encode(s).length;
+console.log("pretty", bytes(pretty), "min", bytes(mini));
+console.log("pretty.gz", gzipSync(pretty).length, "min.gz", gzipSync(mini).length);
+
+### What minifying can change
+
+The tool reads the JSON into a JavaScript value and writes it back, so it carries the same few rewrites as the formatter: 1.0 becomes 1, integers above 2^53 lose digits, and whole-number keys move to the front of their object. The JSON formatter page has the full table. Tick Sort keys if you want the keys in alphabetical order as well.
+
+### Minify JSON in code
+
+JavaScript. With no third argument, JSON.stringify writes no whitespace:
+const text = &#x27;{\n "id": 7,\n "tags": [ "a", "b" ],\n "ok": true\n}&#x27;;
+console.log(JSON.stringify(JSON.parse(text))); Python. By default json.dumps puts a space after every comma and colon, so pass the compact separators:
+import json
+
+text = &#x27;{"id": 7, "tags": [ "a", "b" ], "ok": true}&#x27;
+print(json.dumps(json.loads(text), separators=(",", ":"), ensure_ascii=False)) On the command line, Python&#x27;s json.tool has a compact mode (Python 3.9 or newer):
+python -m json.tool --compact in.json
+
+### When minifying is worth it
+
+- JSON stored in a database column, a cache key or localStorage, where every byte is kept.
+- Payloads in a URL, a cookie or a QR code, where length is limited.
+- Config files bundled into an app that are never edited by hand.
+
+### When to leave it readable
+
+Keep formatted JSON in files people edit and review in version control. A minified file is one long line, so every change shows up as a whole-file diff. Minify at build time, not in the source. To see what changed between two versions regardless of layout, use JSON compare.
+
+### Limits of this tool
+
+- It minifies standard JSON only. Comments, trailing commas and single quotes are errors; the guide to JSON parse errors shows how to fix each.
+- It shortens layout, not content: key names and values stay as they are, and there is no option to rename keys.
+- It minifies one document pasted as text. There is no file upload and no size cap.
+- Everything runs in your browser. The tool&#x27;s code does not send what you paste anywhere; see the privacy policy for the analytics the site does run.
+
+### Sources
+
+- RFC 8259, The JavaScript Object Notation (JSON) Data Interchange Format (insignificant whitespace is allowed around the structural characters, numbers), checked 16 November 2026.
+- MDN: JSON.stringify() (output without whitespace when no space argument is given), checked 16 November 2026.
+- Python documentation: json (compact separators, the json.tool command), checked 16 November 2026.
+The byte counts above were measured in Node 22 with the code shown.
+
+### Frequently asked questions
+
+What does minifying JSON do?
+It removes every space, tab and line break that is not inside a string, so the same data takes fewer bytes. The data itself does not change.
+
+Does minifying change my data?
+No values change, with a few rounding exceptions that come from reading the JSON as JavaScript. Key order is kept, unless you tick Sort keys or a key is a whole number (JavaScript lists those first). Numbers are re-serialised, so 1.0 becomes 1 and 1e2 becomes 100, which is the same number. Integers above 9,007,199,254,740,991 can lose digits.
+
+How much smaller will it get?
+It depends on how much indentation the original had. The small example on this page goes from 51 to 35 bytes, and a generated list of 100 records with 2-space indent went from 10,636 to 5,735 bytes. Already compact JSON barely changes. The tool shows both sizes so you can see your own number.
+
+Should I minify JSON I send over HTTP?
+Compressing the response with gzip or Brotli removes much of the same redundancy, so the saving from minifying on top of compression is smaller. In the generated 100-record test, gzip gave 639 bytes for the indented text and 570 for the minified text. Minifying still helps for JSON stored in databases, localStorage, URLs and config.
+
+Does minifying remove spaces inside strings?
+No. Only whitespace between tokens is removed. A string such as "x y" keeps both spaces.
+
+Can I minify JSON that has comments?
+No. Comments are not JSON, so the tool reports an error instead of minifying. Remove the comments first, or use a tool made for JSONC or JSON5.
+
+How do I undo minification?
+Paste the minified text into the JSON formatter and press Format. Minifying drops only layout, so the formatter restores a readable version. Your original indentation choice and any custom spacing are not remembered, but you can pick 2 spaces, 4 spaces or tabs again.
+
+Is minified JSON the same as compressed or encrypted JSON?
+No. Minified JSON is still plain readable JSON on one line. Compression such as gzip turns it into binary data, and nothing about minifying hides its contents.
+
+Is my JSON uploaded anywhere?
+No. Minifying runs in your browser and the page&#x27;s code makes no network request with your text. The site does run page-level analytics, described in the privacy policy, but that does not include what you paste.
+
+### Related tools
+
+JSON Formatter & Beautifier JSON Validator JSON Compare (JSON Diff) JSON to CSV Converter
+
+Last reviewed 2026-11-16.
+
+
+---
+
+# JSON Diff & Compare: Compare Two JSON Files Online
+
+URL: https://tools.streamerosai.com/json-compare/
+
+Free · runs in your browser
+
+## JSON Compare (JSON Diff)
+
+Paste two JSON documents and see exactly what was added, removed or changed, by path. Key order is ignored, and everything stays in your browser.
+Original (left)
+Changed (right)
+
+Paste two JSON documents and press Compare.
+
+### What a JSON diff is
+
+A JSON diff compares the data in two JSON documents and lists the differences. This tool parses both sides first and compares the values, not the text, so spacing, indentation and key order never show up as changes. Each difference is given with its path, such as $.roles[1].
+
+### How to compare two JSON documents
+
+- Paste the original into the left box and the changed version into the right box. Press Sample to see an example, or Swap sides to reverse them.
+- Press Compare. If either side is invalid JSON, the error tells you which side and where.
+- Read the list: added values exist only on the right, removed only on the left, and changed shows the old and new value.
+
+### Example
+
+Left:
+{"name":"Ada","roles":["admin","editor"],"active":true,"limit":10} Right:
+{"name":"Ada","roles":["admin","viewer"],"active":false,"plan":"pro"} The tool reports four differences:
+changed $.roles[1] "editor" -> "viewer"
+changed $.active true -> false
+removed $.limit 10
+added $.plan "pro" name is the same on both sides, so it is not listed.
+
+### What counts as a difference
+
+Case Result
+Same keys and values in a different order No difference
+One side pretty-printed, the other minified No difference
+1 on one side, 1.0 on the other No difference: both are the number 1
+1 on one side, "1" on the other Changed: a number and a string
+{} on one side, [] on the other Changed: an object and an array
+null on one side, key missing on the other Added or removed: null is a value
+An item inserted at the start of an array Every later index shows as changed, and the new last index as added. Arrays are matched by position, not by content.
+Two large integers that differ only after the 15th or 16th digit No difference: both become the same 64-bit float
+A key repeated within one document Only the last value is compared
+The array rule is the one that surprises people most. For lists of records with an ID, sort both arrays the same way before comparing, or compare one record at a time.
+
+### How the paths are written
+
+$ is the root,.name follows an object key, and [2] is an array position counted from zero. Keys that are not plain identifiers, such as ones with a space or a hyphen, are written as ["first name"]. The JSON viewer uses the same format and copies the path when you click a key.
+
+### Why a structural diff beats a text diff
+
+A normal text diff reports a change whenever two lines differ, including when a service returns the same object with its keys in a different order, or when one file is minified and the other pretty-printed. Comparing the parsed structure ignores those differences and shows only changes in the data.
+
+### Compare JSON in code
+
+JavaScript. isDeepStrictEqual says whether two parsed values are equal. It ignores key order and respects array order and types:
+import { isDeepStrictEqual } from "node:util";
+
+console.log(isDeepStrictEqual({ a: 1, b: [1, 2] }, { b: [1, 2], a: 1 })); // true
+console.log(isDeepStrictEqual({ b: [1, 2] }, { b: [2, 1] })); // false
+console.log(isDeepStrictEqual({ a: 1 }, { a: "1" })); // false Python. == on parsed documents ignores key order but not array order. It also treats True and 1 as equal, because they are in Python, so a boolean and a number can compare equal there although this tool reports them as different:
+import json
+
+a = json.loads(&#x27;{"a":1,"b":[1,2]}&#x27;)
+b = json.loads(&#x27;{"b":[1,2],"a":1}&#x27;)
+print(a == b) # True
+print({"a": 1} == {"a": "1"}) # False
+print({"a": 1} == {"a": True}) # True On the command line you can get a line-by-line diff by sorting the keys of both files first. This uses a shell with process substitution, such as bash:
+diff <(python -m json.tool --sort-keys a.json) <(python -m json.tool --sort-keys b.json) It prints nothing when the files hold the same data. It still treats array order and number spellings such as 1.0 versus 1 as differences, because it compares text.
+
+### Typical uses
+
+- Checking that an API response did not change after a deploy.
+- Finding what differs between two environments&#x27; config files.
+- Reviewing a fixture or snapshot update in a test.
+Tip: format both documents first if you also want to read them side by side. If a document will not parse, the JSON validator shows where it breaks.
+
+### Limits of this tool
+
+- Arrays are compared by position. There is no matching by ID and no moved-item detection.
+- There is no ignore list and no option to compare arrays as sets.
+- The list stops at 500 differences.
+- You paste text. There is no file upload.
+- Everything runs in your browser. The tool&#x27;s code does not send what you paste anywhere; see the privacy policy for the analytics the site does run.
+
+### Sources
+
+- RFC 8259, The JavaScript Object Notation (JSON) Data Interchange Format (object members are unordered, repeated names, number precision), checked 16 November 2026.
+- MDN: JSON.parse() (large numbers lose precision), checked 16 November 2026.
+- Python documentation: json (repeated names, the json.tool command), checked 16 November 2026.
+The difference list and the case table come from running the tool&#x27;s own comparison code on those inputs. The code snippets were run in Node 22 and Python 3.10.
+
+### Frequently asked questions
+
+Does key order matter?
+No. Two objects with the same keys and values are identical here, however the keys are ordered. This is a structural comparison, not a text diff.
+
+How are arrays compared?
+By position. Element 0 is compared with element 0, and so on. If an item is inserted at the start of an array, every later index will show as changed and the last one as added. That is a known limit of index-based comparison.
+
+What does the path mean?
+It locates the value, starting from $ (the root). $.user.roles[1] is the second item of the roles array inside user. A key that is not a plain identifier is written in brackets, such as $["first name"].
+
+Does it tell 1 from "1"?
+Yes. A number and a string with the same digits are different values, so the tool reports a change. 1 and 1.0 are the same number and are not reported.
+
+Is null the same as a missing key?
+No. A key whose value is null is a value. If one side has the key with null and the other side has no such key, the tool reports it as added or removed.
+
+Can I ignore a field such as a timestamp?
+There is no ignore option. Delete that field from both documents first, then compare.
+
+Is my data uploaded?
+No. Both documents are parsed and compared in your browser, and the page&#x27;s code makes no network request with your text. The site does run page-level analytics, described in the privacy policy, but that does not include what you paste.
+
+Is there a limit on differences?
+The list shows the first 500. If you reach it, the two documents are very different and a text diff in your editor may be more useful.
+
+How do I compare two JSON files in code?
+In Node, util.isDeepStrictEqual(a, b) returns true or false after you parse both files. In Python, a == b on two parsed documents ignores key order but not array order. Both give a yes or no, not a list of differences. The page shows a command-line way to get a text diff as well.
+
+### Related tools
+
+JSON Formatter & Beautifier JSON Validator JSON to CSV Converter JSON Minifier
+
+Last reviewed 2026-11-16.
+
+
+---
+
+# JSON to CSV Converter Online (Free, In-Browser)
+
+URL: https://tools.streamerosai.com/json-to-csv/
+
+Free · runs in your browser
+
+## JSON to CSV Converter
+
+Turn a JSON array into a CSV file for Excel or Google Sheets. Nested objects are flattened, the delimiter is yours to choose, and nothing is uploaded.
+JSON input
+CSV output
+
+Delimiter Comma Semicolon Tab Flatten nested objects
+Paste a JSON array of objects, then press Convert.
+
+### What the converter does
+
+CSV is a table: one header row, then one row per record. JSON is a tree. This tool turns a JSON array of objects into that table. Each object is a row, each key is a column, and nested objects are flattened into columns with dotted names. The result can be copied or downloaded as data.csv.
+
+### How to convert JSON to CSV
+
+- Paste a JSON array of objects, or press Sample.
+- Pick a delimiter and decide whether to flatten nested objects, then press Convert.
+- Press Copy or Download.csv.
+
+### Example
+
+[{"id":1,"name":"Ada","address":{"city":"London"}},
+{"id":2,"name":"Grace, Rear Adm.","address":{"city":"New York"}}] becomes
+id,name,address.city
+1,Ada,London
+2,"Grace, Rear Adm.",New York Note the quotes around the second name: a field containing the delimiter is quoted, as RFC 4180 requires. With Flatten nested objects turned off, the third column is called address and holds the JSON text {"city":"London"}, quoted, because it contains quote marks.
+A second example, with an array, a null and a key that only one record has:
+[{"id":1,"name":"Ada","tags":["a","b"],"note":null},
+{"id":2,"extra":true}] id,name,tags,note,extra
+1,Ada,"[""a"",""b""]",,
+2,,,,true
+
+### How each JSON value becomes a cell
+
+JSON value CSV cell
+string The text as it is, quoted if it needs to be
+number The number as JavaScript writes it. Very large or small values can use exponent form, such as 1e+21, and integers above 2^53 lose digits.
+true, false true, false
+null, or a key the object lacks An empty cell
+array One cell holding the array as JSON text, for example ["a","b"]
+nested object, Flatten on One column per leaf, named with dots, such as address.city. An empty object gives an empty cell.
+nested object, Flatten off One cell holding the object as JSON text
+an item that is not an object, such as 5 or "x" A row with the value in a column called value
+a single object instead of an array One row
+
+### How the columns are chosen
+
+The header row is the union of every key found in any object, in the order each key first appears. If an object lacks a key, its cell is left empty. This means rows with different shapes still line up under the right columns.
+
+### Quoting, delimiters and line endings
+
+RFC 4180 describes CSV with a comma between fields, a CRLF line break between records, double quotes around any field that contains a comma, a double quote or a line break, and a doubled double quote to write a quote inside a field. The tool follows those rules for whichever delimiter you choose, so a field is quoted when it contains the delimiter, a quote or a line break. Semicolon and tab are common variants that the RFC does not cover. Records are separated by CRLF, and there is no line break after the last one.
+
+### Things to watch for
+
+- Dots in keys. A key that already contains a dot, such as a.b, and a nested a with a b inside give the same column name. When both are in one record, the later one overwrites the earlier.
+- Arrays are not expanded. A record with a list of five items still produces one row. If you want one row per item, restructure the JSON first.
+- Text that looks like a formula. Values starting with =, +, - or @ are written unchanged. Check data you do not trust before opening it in a spreadsheet.
+- Invalid input. Only valid JSON converts. The error shows the line and column; the JSON validator lists each message and fix.
+
+### Convert JSON to CSV in code
+
+Python, standard library only. This flattens nested objects the same way as this page and writes out.csv from a data.json holding an array of objects. On a test file with nested objects, an array, a null, an empty object and a name needing quotes, it produced the same CSV as the tool, plus a final line break:
+import csv
+import json
+
+def flatten(value, prefix=""):
+"""Nested objects become dotted keys; everything else is one cell."""
+if isinstance(value, dict):
+if not value:
+return {prefix or "value": ""}
+out = {}
+for key, item in value.items():
+out.update(flatten(item, f"{prefix}.{key}" if prefix else key))
+return out
+return {prefix or "value": value}
+
+def cell(value):
+if value is None:
+return ""
+if isinstance(value, str):
+return value
+return json.dumps(value, separators=(",", ":"))
+
+with open("data.json", encoding="utf-8") as f:
+data = json.load(f)
+rows = [flatten(r) for r in (data if isinstance(data, list) else [data])]
+
+headers = []
+for row in rows:
+for key in row:
+if key not in headers:
+headers.append(key)
+
+with open("out.csv", "w", newline="", encoding="utf-8") as f:
+writer = csv.writer(f, lineterminator="\r\n")
+writer.writerow(headers)
+for row in rows:
+writer.writerow([cell(row.get(h)) for h in headers]) Open the output file with newline="", as above, or Python on Windows writes an extra carriage return. For a flat array of objects (no nesting) on Windows, PowerShell does it in two lines. This was tested in Windows PowerShell 5.1; it quotes every field and does not flatten nested objects:
+$rows = Get-Content -Raw flat.json | ConvertFrom-Json
+$rows | Export-Csv -NoTypeInformation -Encoding UTF8 -Path flat.csv
+
+### Limits of this tool
+
+- It converts JSON to CSV only. It does not convert back.
+- It reads pasted text. There is no file upload, and a very large paste is slow.
+- Values stay text or numbers as JSON gave them. It does not format dates or add column types.
+- Everything runs in your browser. The tool&#x27;s code does not send what you paste anywhere; see the privacy policy for the analytics the site does run.
+To read a document before converting it, open it in the JSON viewer or tidy it with the JSON formatter. The guide to JSON parse errors helps when the input will not parse.
+
+### Sources
+
+- RFC 4180, Common Format and MIME Type for CSV Files (comma separator, CRLF, quoting rules), checked 16 November 2026.
+- RFC 8259, The JavaScript Object Notation (JSON) Data Interchange Format (JSON values, number precision), checked 16 November 2026.
+- Python documentation: json (json.load, json.dumps separators), checked 16 November 2026.
+The example outputs were produced by running the tool&#x27;s conversion code. The Python script was run in Python 3.10 on that test file and its output compared byte for byte with the tool&#x27;s.
+
+### Frequently asked questions
+
+What JSON shape converts best?
+An array of objects, like [{"id":1},{"id":2}]. Each object becomes a row and each key becomes a column. A single object becomes one row.
+
+What happens to nested objects?
+With Flatten nested objects on, nested keys become dotted column names, so {"address":{"city":"London"}} gives a column called address.city. With it off, the nested object is written into one cell as JSON text.
+
+What happens to arrays inside a row?
+An array is written into a single cell as JSON text, for example ["a","b"]. Splitting arrays into extra columns or rows would change the shape of your data, so the tool does not guess.
+
+Why are some cells empty?
+A cell is empty when the object has no such key, when the value is null, or when the value is an empty object and Flatten is on. Rows with different keys still line up, because the header row is the union of all keys.
+
+Why is there a column called value?
+When an item in the array is not an object, such as a number, a string or a nested array, there is no key to use as a column name. The tool puts it in a column called value. The same happens if the whole JSON is a single number or string.
+
+Will it open correctly in Excel?
+The downloaded file includes a UTF-8 byte-order mark, which helps Excel read accents and non-Latin text correctly. The Copy button does not add it. In some regions Excel expects a semicolon delimiter, which you can choose.
+
+Is there a security risk opening the CSV?
+If a value starts with =, +, - or @, a spreadsheet may treat it as a formula. The tool does not change values, so review CSV from untrusted JSON before opening it in Excel or Google Sheets.
+
+Can I convert CSV back to JSON?
+Not on this site. This tool only goes from JSON to CSV, and flattening is not reversible: the dotted column names and the JSON text in array cells would need to be turned back into structure by your own code.
+
+Is my data uploaded?
+No. The conversion runs in your browser, and the CSV is generated on your device. The page&#x27;s code makes no network request with your text. The site does run page-level analytics, described in the privacy policy, but that does not include what you paste.
+
+### Related tools
+
+JSON Formatter & Beautifier JSON Validator JSON Compare (JSON Diff) JSON Minifier
+
+Last reviewed 2026-11-16.
+
+
+---
+
+# Base64 Encode and Decode Online (UTF-8, URL-safe)
+
+URL: https://tools.streamerosai.com/base64/
+
+Free · runs in your browser
+
+## Base64 Encode & Decode
+
+Convert text to Base64 and back. Unicode is handled as UTF-8, URL-safe output is one tick away, and nothing is sent to a server.
+Input
+Output
+
+URL-safe output (- and _, no padding)
+Type or paste text, then choose Encode or Decode.
+
+### What Base64 is
+
+Base64 writes any bytes using only 64 safe text characters: the letters A to Z and a to z, the digits 0 to 9, and + and /. That lets binary data travel through places that only accept text, such as email, JSON or a URL. It is an encoding, not encryption, and not compression: it makes data larger, and anyone can reverse it.
+
+### How to use it
+
+- Type or paste text into the Input box.
+- Press Encode to get Base64, or paste Base64 and press Decode to get the text back.
+- Tick URL-safe output before encoding if the result goes in a URL, a filename or a JWT.
+Want the background? Read what Base64 is and when to use it. To only decode, use the Base64 decode page.
+
+### Example
+
+Hello, world → SGVsbG8sIHdvcmxk Standard Base64 can contain +, / and trailing =. The URL-safe form replaces the first two with - and _ and drops the padding. For the text??>> the two forms are:
+standard Pz8+Pg==
+URL-safe Pz8-Pg
+
+### How the encoding works
+
+Base64 takes the input 3 bytes (24 bits) at a time and splits those 24 bits into four groups of 6 bits. Each 6-bit value, from 0 to 63, is written as one character from the alphabet. When the input is not a multiple of 3 bytes, the last group is padded with = signs:
+Input Bytes Base64 Padding
+Man 3 TWFu none
+Ma 2 TWE= one =
+M 1 TQ== two =
+
+### The Base64 alphabet
+
+Values Standard URL-safe
+0 to 25 A to Z A to Z
+26 to 51 a to z a to z
+52 to 61 0 to 9 0 to 9
+62 + -
+63 / _
+padding = =, often left off
+RFC 4648 notes that the = in a URI is normally percent-encoded, so URL-safe Base64 usually skips the padding when the data length is known another way. The tool&#x27;s URL-safe option drops it.
+
+### How much bigger is Base64?
+
+Every 3 bytes become 4 characters, so the output length is 4 times the input length divided by 3, rounded up. 1,000 bytes become 1,336 characters, about a third more. The tool shows the size of the input and the output above each box.
+
+### Unicode text and UTF-8
+
+Base64 encodes bytes, not letters, so text has to become bytes first. This tool uses UTF-8, the usual choice on the web. A plain letter is 1 byte, é is 2 bytes and an emoji such as 😀 is 4:
+Text UTF-8 bytes Base64
+é 2 w6k=
+😀 4 8J+YgA==
+If another tool encodes the same text as UTF-16 or Latin-1, its Base64 will differ from this one for anything that is not plain ASCII.
+
+### Encode Base64 in code
+
+JavaScript, in a browser or Node. btoa only accepts characters up to code 255 and throws an InvalidCharacterError on anything else, so convert text to UTF-8 bytes first:
+const text = "héllo 😀";
+const bytes = new TextEncoder().encode(text);
+const b64 = btoa(Array.from(bytes, (b) => String.fromCharCode(b)).join(""));
+console.log(b64); // aMOpbGxvIPCfmIA=
+
+// URL-safe: swap two characters and drop the padding
+console.log(b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "")); In Node, Buffer does the same in one call and has a URL-safe name:
+Buffer.from("héllo 😀", "utf8").toString("base64"); // aMOpbGxvIPCfmIA=
+Buffer.from("??>>", "utf8").toString("base64url"); // Pz8-Pg Python. urlsafe_b64encode keeps the = padding, so strip it if you want the unpadded form:
+import base64
+
+print(base64.b64encode("héllo 😀".encode("utf-8")).decode("ascii"))
+print(base64.urlsafe_b64encode("??>>".encode("utf-8")).decode("ascii").rstrip("=")) Command line. Use printf, not echo, so no line break is encoded. GNU base64 wraps its output every 76 characters; -w 0 turns that off:
+printf &#x27;%s&#x27; &#x27;Hello, world&#x27; | base64
+printf &#x27;%s&#x27; &#x27;Hello, world&#x27; | base64 -w 0 PowerShell:
+[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("Hello, world"))
+
+### Common mistakes
+
+- Encoding a trailing newline. echo Hello | base64 gives SGVsbG8K, not SGVsbG8=.
+- Calling btoa on Unicode. It throws, or if the characters happen to fit in one byte, it encodes Latin-1 rather than UTF-8: btoa("héllo") gives aOlsbG8=, while the UTF-8 form is aMOpbGxv.
+- Using standard Base64 in a URL. Use the URL-safe form, or percent-encode the +, / and =.
+- Treating it as secret. Base64 hides nothing. See the Base64 guide.
+
+### Limits of this tool
+
+- It encodes and decodes text only. There is no file or image input.
+- Decoding needs the result to be valid UTF-8 text; binary results are reported as an error, not shown.
+- Everything runs in your browser. The tool&#x27;s code does not send what you paste anywhere; see the privacy policy for the analytics the site does run.
+Base64 often carries JSON. After decoding, check it with the JSON validator or tidy it with the JSON formatter.
+
+### Sources
+
+- RFC 4648, The Base16, Base32, and Base64 Data Encodings (the alphabet, padding, the URL and filename safe alphabet), checked 16 November 2026.
+- MDN: Base64 (about a third larger than the source), checked 16 November 2026.
+- MDN: btoa() (binary strings, InvalidCharacterError), checked 16 November 2026.
+- MDN: TextEncoder (encodes a string as UTF-8), checked 16 November 2026.
+- Node.js documentation: Buffer (the base64 and base64url encodings), checked 16 November 2026.
+- Python documentation: base64 (b64encode, urlsafe_b64encode), checked 16 November 2026.
+The example values and code were run in Node 22, Python 3.10, GNU coreutils 8.32 and Windows PowerShell 5.1.
+
+### Frequently asked questions
+
+Is Base64 encryption?
+No. Base64 is an encoding that anyone can reverse without a key. Never use it to hide passwords or secrets.
+
+Why is the output longer than the input?
+Base64 turns every 3 bytes into 4 characters, so the output is about 33% larger than the input, plus padding. The exact length is 4 times the input length in bytes divided by 3, rounded up. 1,000 bytes become 1,336 characters.
+
+What is URL-safe Base64?
+A variant that uses - and _ instead of + and /, and usually drops the = padding, so the result can sit inside a URL or filename. It is defined in RFC 4648, section 5.
+
+What does the = at the end mean?
+It is padding. Base64 works in groups of 3 bytes. If the last group has only 1 byte the output ends in ==, and if it has 2 bytes the output ends in a single =. A multiple of 3 bytes needs none.
+
+Does it handle emoji and accented text?
+Yes. Text is converted to UTF-8 bytes before encoding, so any Unicode character round-trips correctly. Functions that assume one byte per character, like a bare btoa, fail on such text.
+
+Why does my command line give a different result from this tool?
+Usually because echo adds a line break to the text, and the break is encoded too: echo Hello | base64 gives SGVsbG8K, while printf with the text and no newline gives SGVsbG8=. GNU base64 also wraps its output at 76 characters unless you pass -w 0.
+
+How do I encode a file or an image?
+This tool encodes text only. For a file, use a command-line tool: base64 file.png with GNU coreutils (Linux, Git Bash), or [Convert]::ToBase64String([IO.File]::ReadAllBytes("file.png")) in PowerShell. Your code can do the same with the byte-level functions shown on this page.
+
+Is what I type uploaded anywhere?
+No. Encoding runs in your browser, and the page&#x27;s code makes no network request with your text. The site does run page-level analytics, described in the privacy policy, but that does not include what you paste.
+
+Why does decoding fail?
+Either the text is not valid Base64, or it decodes to bytes that are not UTF-8 text, such as an image or a compressed file. This tool decodes text only. The Base64 decode page lists what is accepted and what is rejected.
+
+### Related tools
+
+Base64 Decode JSON Formatter & Beautifier JSON Validator JSON Minifier
+
+Last reviewed 2026-11-16.
+
+
+---
+
+# Base64 Decode Online: Decode Base64 to Text
+
+URL: https://tools.streamerosai.com/base64-decode/
+
+Free · runs in your browser
+
+## Base64 Decode
+
+Paste a Base64 string and get the text back. URL-safe input and missing padding are handled for you, and the decoding happens in your browser.
+Input
+Output
+
+URL-safe output (- and _, no padding)
+Type or paste text, then choose Encode or Decode.
+
+### How to decode Base64
+
+- Paste the Base64 string into the Input box. Spaces and line breaks are ignored.
+- Press Decode (or Ctrl/Cmd + Enter).
+- Press Copy to take the text. If it is JSON, use Use output as input and then open the JSON formatter.
+
+### Examples
+
+SGVsbG8sIHdvcmxk → Hello, world A JWT header is a typical thing to decode. It uses the URL-safe alphabet with no padding, and this tool accepts it as it is:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9 → {"alg":"HS256","typ":"JWT"} A JWT is three Base64URL segments separated by dots (RFC 7519). The first two are JSON, so paste one segment at a time and then check it with the JSON validator. The third is the signature, which is not text.
+
+### What the tool does when you press Decode
+
+- Removes spaces, tabs and line breaks from both ends and from inside the text.
+- Turns - into + and _ into /, so URL-safe input becomes standard Base64.
+- Adds = until the length is a multiple of 4.
+- Decodes the result to bytes with the browser&#x27;s own Base64 decoder.
+- Reads the bytes as UTF-8. Bytes that are not valid UTF-8 are rejected, not replaced with question marks.
+
+### What it accepts and what it rejects
+
+Input Result Why
+SGk Hi Missing padding is added.
+SGVs then a line break, then bG8= Hello Whitespace is ignored, as in line-wrapped Base64 from email.
+8J-YgA 😀 URL-safe characters are accepted.
+SGk=== Not valid Base64 More = than the data can need.
+SG=k Not valid Base64 = is only allowed at the end.
+S Not valid Base64 One leftover character cannot be a whole byte.!!!!, or a string with quotes Not valid Base64 Characters outside the alphabet.
+SGk=SGk= Not valid Base64 Two encoded strings joined: padding appears in the middle. Decode each separately.
+data:text/plain;base64,SGk= Not valid Base64 The prefix is not Base64. Paste only what follows the comma.
+/9j/4AAQ (the start of a JPEG file) Valid Base64, not UTF-8 text The bytes are binary data, so there is no text to show.
+6Q== Valid Base64, not UTF-8 text The single byte E9 is é in Latin-1 but is not valid UTF-8 on its own.
+RFC 4648 says a decoder must reject characters outside the alphabet unless the specification it serves says otherwise, and notes that MIME-style data may have its line breaks ignored. This tool follows the second case for whitespace only.
+
+### The two error messages
+
+- Not valid Base64. The text has a character outside A-Z, a-z, 0-9, + and / (or - and _), misplaced or surplus =, or a length that cannot be right. Compare it with the table above.
+- Valid Base64, but the bytes are not UTF-8 text. The decoding worked, but the result is binary data or text in another encoding. See the next section.
+
+### When the result is not text
+
+Base64 is a way to carry bytes, not a type of data. If the original was an image, a PDF or an archive, the decoded bytes are not readable text and this tool will report an error instead of showing nonsense. Save such data to a file with a tool built for binary content. Encrypted data and hashes also decode to random bytes.
+Base64 is also not encryption. If decoding reveals a password or a key, treat it as exposed. The guide to Base64 explains why.
+
+### Decode Base64 in code
+
+JavaScript, in a browser or Node. This does what the tool does. atob throws an InvalidCharacterError for text that is not Base64, and the strict decoder throws a TypeError for bytes that are not UTF-8:
+function decode(input) {
+let s = input.trim().replace(/\s+/g, "").replace(/-/g, "+").replace(/_/g, "/");
+while (s.length % 4) s += "=";
+const bin = atob(s);
+const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+}
+
+console.log(decode("8J-YgA")); // 😀 In Node, Buffer is shorter but lenient. It accepts both alphabets and ignores whitespace, and it does not throw on bad input. For!!!! it returned an empty string, so check the result:
+Buffer.from("8J-YgA", "base64").toString("utf8"); // 😀 Python. validate=True makes b64decode reject characters outside the alphabet instead of skipping them. The padding line adds back any = that was dropped:
+import base64
+
+def decode_any(s):
+"""Accepts standard or URL-safe input, with or without padding."""
+s = "".join(s.split()).replace("-", "+").replace("_", "/")
+s += "=" * (-len(s) % 4)
+return base64.b64decode(s, validate=True).decode("utf-8")
+
+print(decode_any("8J-YgA")) # 😀 Python raises binascii.Error for bad Base64 (for example Incorrect padding or Non-base64 digit found, worded by version) and UnicodeDecodeError for bytes that are not UTF-8.
+Command line. GNU base64 wants the padding. Given SGk it prints Hi, then reports base64: invalid input and exits with status 1:
+printf &#x27;%s&#x27; &#x27;SGVsbG8sIHdvcmxk&#x27; | base64 --decode PowerShell:
+[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String("SGVsbG8sIHdvcmxk")) PowerShell&#x27;s error for the unpadded SGk is Invalid length for a Base-64 char array or string.
+
+### Limits of this tool
+
+- It decodes to text only. Images, PDFs and other binary data are reported as an error.
+- It reads UTF-8. Text that was encoded in Latin-1 or UTF-16 does not decode here.
+- It reads pasted text. There is no file upload.
+- Everything runs in your browser. The tool&#x27;s code does not send what you paste anywhere; see the privacy policy for the analytics the site does run.
+To go the other way, use Base64 encode, which also explains the alphabet, padding and size increase.
+
+### Sources
+
+- RFC 4648, The Base16, Base32, and Base64 Data Encodings (alphabets, padding, rejecting non-alphabet characters), checked 16 November 2026.
+- RFC 7519, JSON Web Token (JWT) (a JWT is base64url-encoded parts separated by periods), checked 16 November 2026.
+- MDN: atob() (InvalidCharacterError for invalid Base64), checked 16 November 2026.
+- MDN: data URLs (the data:[media-type][;base64],data syntax), checked 16 November 2026.
+- Node.js documentation: Buffer (base64 input accepts both alphabets and ignores whitespace), checked 16 November 2026.
+- Python documentation: base64 (b64decode and its validate option), checked 16 November 2026.
+The accepted and rejected inputs in the table were run through the tool&#x27;s own decoding steps in Node 22. The code was run in Node 22, Python 3.10, GNU coreutils 8.32 and Windows PowerShell 5.1.
+
+### Frequently asked questions
+
+Does it accept URL-safe Base64?
+Yes. - and _ are treated as + and /, and missing = padding is added back, so strings taken from a URL or a JWT decode without edits. Standard and URL-safe characters can even be mixed in one string.
+
+Can I decode a JWT here?
+You can decode the header and payload, which are Base64URL-encoded JSON: paste one segment (the text between the dots) at a time. Decoding does not verify the signature, so never trust a token because it decodes.
+
+Why do I see an error instead of text?
+If the message says the text is not valid Base64, it contains something outside the alphabet or has the wrong length. If it says the Base64 is valid but the bytes are not UTF-8 text, the data is probably an image, a PDF or compressed data. This tool decodes text only.
+
+Why does decoding fail with an invalid string?
+Check for characters outside A-Z, a-z, 0-9, + and / (or - and _), stray quotes, too many = signs, = in the middle, or a string cut off in the middle. Line breaks and spaces are ignored.
+
+How do I decode a data URL such as data:text/plain;base64,...?
+Paste only the part after the comma. The prefix, data:text/plain;base64, is not Base64, so including it causes an error. If the media type is an image, the decoded bytes are not text and this tool cannot show them.
+
+How do I decode Base64 on the command line?
+With GNU coreutils, printf &#x27;%s&#x27; &#x27;SGVsbG8sIHdvcmxk&#x27; | base64 --decode. In PowerShell, [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String("SGVsbG8sIHdvcmxk")). Both want the = padding to be present.
+
+Why is the decoded text garbled?
+The bytes are probably text in another encoding, or not text at all. This tool reads the decoded bytes as UTF-8 and refuses anything that is not valid UTF-8, so garbled output usually shows up as an error. Text that was encoded as Latin-1 or UTF-16 will not decode here.
+
+Is Base64 reversible without a key?
+Yes, and that is why it is not encryption. Anyone can decode it. If decoding reveals a password or a key, treat it as exposed.
+
+Is my input uploaded?
+No. Decoding happens in your browser, and the page&#x27;s code makes no network request with your text. The site does run page-level analytics, described in the privacy policy, but that does not include what you paste.
+
+### Related tools
+
+Base64 Encode & Decode JSON Formatter & Beautifier JSON Validator JSON Compare (JSON Diff)
+
+Last reviewed 2026-11-16.
+
+
+---
+
+# JSON and Base64 Guides for Developers
+
+URL: https://tools.streamerosai.com/guides/
+
+Guides
+
+## Guides for JSON and Base64
+
+Short explanations that go with the tools, written to fix the problem you came with.
+
+#### Why JSON.parse fails: the 6 errors behind most invalid JSON
+
+Trailing commas, single quotes, comments and the other mistakes, with a fix for each.
+Read guide →
+
+#### What Base64 is and when to use it
+
+How the encoding works, why it grows data by a third, and why it is not encryption.
+Read guide →
+Each guide ends with the standard it is based on (an RFC for both of these), worked examples whose output you can check in the tools, and the situations where the usual advice does not apply.
+
+
+---
+
+# Why JSON.parse fails: the 6 errors behind most invalid JSON
+
+URL: https://tools.streamerosai.com/guides/json-parse-errors/
+
+## Why JSON.parse fails: the 6 errors behind most invalid JSON
+
+JSON looks like a JavaScript object, but the grammar is much stricter, and a parser rejects the whole document at the first rule it breaks. Almost every "Unexpected token" error comes from one of the six mistakes below. Paste your text into the JSON formatter to see the position of the first one.
+
+### 1. A trailing comma
+
+{ "a": 1, "b": 2, } JSON does not allow a comma after the last item in an object or array. Delete it: { "a": 1, "b": 2 }.
+
+### 2. Single quotes
+
+{ &#x27;name&#x27;: &#x27;Ada&#x27; } Strings and keys must use double quotes. Replace every single quote that delimits a string with a double quote.
+
+### 3. Unquoted keys
+
+{ name: "Ada" } This is valid JavaScript but not JSON. Every key is a double-quoted string: { "name": "Ada" }.
+
+### 4. Comments
+
+{ "a": 1 // the count } JSON has no comment syntax, neither // nor /* */. Remove them, or store notes in a normal field such as "_note". Config formats like JSONC and JSON5 allow comments, but a standard JSON parser rejects them.
+
+### 5. Values that only exist in JavaScript
+
+undefined, NaN, Infinity and function values are not JSON. Use null for a missing value. Numbers also cannot have leading zeros ( 007) or a trailing dot ( 5.).
+
+### 6. Unescaped characters inside strings
+
+A literal line break or tab inside a string is invalid; write \n or \t. A double quote inside a string is written \", and a backslash as \\. Windows paths are a common source: "C:\temp" must be "C:\\temp".
+
+### Reading the error message
+
+Engines phrase the error differently. Older ones say something like "Unexpected token } in JSON at position 12"; current ones say "Expected double-quoted property name in JSON at position 12 (line 1 column 13)". The position is where the parser gave up, which is at or just after the real mistake. Look one token back: a trailing comma is reported at the closing brace that follows it.
+Still stuck? Bisect: remove half the document and check again, repeating until the error moves.
+
+### Worked example: finding the break
+
+Take this document, which a person copied out of a config file:
+{"name": "Ada",
+"langs": ["en", "fr",],
+"active": true} Node.js 20 and later report: Unexpected token &#x27;]&#x27;,..."en", "fr",], followed by the line that continues the sentence. The message names the closing bracket, not the comma, because the parser only learns the comma was a mistake when it meets the ] where a value should be. The fix is to delete the comma after "fr". Notice that the error points at the first problem only. If the file also contained single quotes further down, you would see that error only after fixing this one, so repeat until the document passes.
+
+### Errors that are not syntax errors
+
+- Empty input. An empty string gives "Unexpected end of JSON input". This usually means a request returned an empty body or a file was not read.
+- A byte order mark. Some editors on Windows save UTF-8 files with an invisible marker at the start. The parser reports an unexpected token at position 0 although the text looks fine. Re-save the file as UTF-8 without BOM.
+- HTML instead of JSON. If an API call fails and returns an error page, the text starts with <. The JSON is not wrong; the response is not JSON.
+- Large numbers. JSON itself puts no limit on number size, but JavaScript stores numbers as 64-bit floats. 9007199254740993 parses to 9007199254740992, silently. Carry ids that large as strings.
+- Duplicate keys. The standard says names SHOULD be unique and leaves duplicate handling undefined. JavaScript keeps the last value, so {"a":1,"a":2} parses to a = 2 with no error. The JSON validator is the place to notice that kind of surprise.
+
+### Which tool to use
+
+To locate the error, paste the text into the JSON validator, which reports the line and column. To repair and re-indent a document that already parses, use the JSON formatter. To compare a broken version with a working one, use JSON compare on the two once both parse.
+
+### Source
+
+The grammar the six rules above come from is RFC 8259, The JavaScript Object Notation (JSON) Data Interchange Format, at datatracker.ietf.org/doc/html/rfc8259. Error wording varies between engines and versions; the examples above were produced with Node.js running V8.
+
+
+---
+
+# What Base64 is and when to use it
+
+URL: https://tools.streamerosai.com/guides/what-is-base64/
+
+## What Base64 is and when to use it
+
+Base64 is a way to write arbitrary bytes using only 64 safe, printable characters: A-Z, a-z, 0-9, + and /. It exists because many systems (email, JSON, URLs, HTTP headers) were built for text and break on raw binary. You can try it in the Base64 encoder and decoder.
+
+### How it works
+
+The input is read three bytes (24 bits) at a time and split into four groups of 6 bits. Each 6-bit value, 0 to 63, maps to one character in the alphabet. If the input length is not a multiple of three, = padding fills out the last group. For example, the text Man becomes TWFu.
+
+### Why the output is bigger
+
+Three bytes become four characters, so Base64 output is about one third larger than the input. A 300 KB image embedded as Base64 costs roughly 400 KB.
+
+### It is not encryption
+
+Anyone can decode Base64 without a key. Putting a password or token in Base64 hides nothing. If data must be secret, encrypt it first; Base64 is then only the way you carry the encrypted bytes as text.
+
+### Common uses
+
+- Data URIs: small images inlined in HTML or CSS as data:image/png;base64,....
+- Email attachments: MIME encodes binary files this way.
+- HTTP Basic authentication: the user:password pair is Base64-encoded in the header, which is why Basic auth must only be used over HTTPS.
+- JWTs: the header and payload are Base64URL-encoded JSON.
+
+### The URL-safe variant
+
++ and / have special meaning in URLs and filenames. Base64URL (RFC 4648, section 5) swaps them for - and _ and usually omits the = padding. Use the URL-safe option in the tool when the result goes into a URL, a filename or a JWT.
+
+### Text and Unicode
+
+Base64 works on bytes, not characters, so text must be turned into bytes first. UTF-8 is the usual choice. Encoding text with accents or emoji through a function that assumes single-byte characters produces wrong output, which is why the tool encodes as UTF-8.
+
+### Worked examples you can check
+
+Input Base64 Why
+Man TWFu 3 bytes make exactly 4 characters, no padding
+Ma TWE= 2 bytes leave a short group, one = pad
+M TQ== 1 byte, two = pads
+user:pass dXNlcjpwYXNz the form used by HTTP Basic authentication
+Hello, 世界 SGVsbG8sIOS4lueVjA== 13 UTF-8 bytes (each Chinese character takes 3), 20 output characters
+The length rule is 4 x ceil(n / 3) characters for n bytes. For 13 bytes that is 4 x 5 = 20, which matches the last row. The URL-safe form differs only in the two symbols: the three bytes FB FF FE encode to +//+ in standard Base64 and -__- in Base64URL.
+
+### Why a Base64 string will not decode
+
+- Wrong length. A valid string with padding has a length that is a multiple of 4. Without padding, a remainder of 1 character is impossible, so the string was cut off or has an extra character.
+- The wrong alphabet. A string with - or _ is Base64URL; a decoder expecting the standard alphabet rejects it, and the reverse is also true.
+- Line breaks and spaces. Email (MIME) wraps Base64 at 76 characters per line. Strict decoders reject the line breaks; remove them first.
+- It was not text to begin with. Decoding an image or a compressed file as text produces unreadable characters. That is not an error in the Base64; the bytes are simply not text.
+The Base64 decode page lists the cause it finds for a string that fails, and the Base64 encoder and decoder handles both directions with UTF-8.
+
+### In JavaScript
+
+Browsers have btoa() and atob(), but they work on strings of single-byte characters, so btoa("世") throws an error. For text, convert to UTF-8 bytes first (for example with TextEncoder) and encode those. In Node.js, Buffer.from(text).toString("base64") does it directly, and "base64url" gives the URL-safe variant.
+
+### Sources
+
+The alphabet, padding and the URL-safe variant are defined in RFC 4648 ( datatracker.ietf.org/doc/html/rfc4648). The 76-character line limit comes from MIME, RFC 2045 section 6.8. HTTP Basic authentication is RFC 7617, and the JWT format that uses Base64URL is RFC 7519.
+
+
+---
+
+# About StreamerOS Dev Tools: Free, Private Dev Utilities
+
+URL: https://tools.streamerosai.com/about/
+
+## About
+
+StreamerOS Dev Tools is a small set of free utilities for developers: a JSON formatter and validator, a Base64 encoder and decoder, and short guides that explain the formats behind them.
+It is built and maintained by Yaseen Khatib, a full-stack AI engineer, as part of the StreamerOS project. The tools exist because the common ones are often cluttered, slow or unclear about what happens to the text you paste.
+
+### How the tools work
+
+Every tool runs in your browser using standard JavaScript. The text you enter is processed on your device and is not sent to a server or stored. The site is a static website hosted on GitHub Pages.
+
+### Who is behind it
+
+The site is run by one person, Yaseen Khatib, a full-stack AI developer based in Hyderabad, India. His portfolio is at yk.streamerosai.com. There is no team and no company behind the pages, which is why corrections go straight to him through the contact page. The same family of small sites also includes tools for developers, money, images and maths at tools, calc, images and math on streamerosai.com.
+
+### How pages are kept accurate
+
+The calculation code has automated tests, every formula is written out on the page with a worked example you can check by hand, and facts that come from outside (rates, rules, standards) name their source. Each page shows the date it was last reviewed, and that date changes only when the page does. The assumptions and limits of a tool are stated on its page rather than hidden, and a result that cannot be right (an impossible date, for instance) shows a message instead of a number. The terms of use and privacy policy describe the rest.
+
+### How the site is funded
+
+The tools are free. The site does not show ads at the moment; it may show Google AdSense ads to cover hosting and development time. Ads never change the output of a tool.
+
+### Corrections
+
+If a result is wrong or a guide contains a mistake, please use the contact page. Fixes are made in the open and the guides are updated.
+
+
+---
+
+# Privacy Policy: StreamerOS Dev Tools
+
+URL: https://tools.streamerosai.com/privacy/
+
+## Privacy Policy
+
+This policy describes what StreamerOS Dev Tools ( https://tools.streamerosai.com) does with information when you use it. Last updated: 24 November 2026.
+
+### What the tools do with your input
+
+The JSON formatter and Base64 tool process your text entirely in your browser. The text you type or paste is not transmitted to our servers, logged, or stored. Closing the page clears it.
+
+### Cookies and similar technologies
+
+Cookies are small files a site stores in your browser. The analytics and advertising services listed below may set cookies or read similar identifiers. The tools themselves do not need a cookie to work. The only thing the site stores for its own use is your light or dark theme choice, kept in your browser&#x27;s local storage and never sent anywhere. You can block or delete cookies in your browser settings; the tools keep working either way.
+
+### Analytics
+
+This site uses Google Analytics 4 to count visits and see which pages are useful. It collects page views, approximate location, device and browser type, and how you arrived, using cookies and similar identifiers. It does not receive the text you enter into the tools. You can opt out with the Google Analytics opt-out browser add-on. Google signals is on, so for visitors signed in to a Google account with ad personalisation turned on, Google may associate this site&#x27;s visit data with that account to give us aggregated reports on age group, gender and interests; no individual is identified to us. You can turn this off in your Google account under Data & privacy, or in My Ad Center. We do not sell personal information.
+
+### Usage recording
+
+This site uses Microsoft Clarity to see how pages are used, through heatmaps and anonymised session recordings (mouse movement, clicks and scrolling). Clarity is configured to mask the text on the page, so what you type or load into a tool is not recorded. Clarity sets its own cookies ( _clck, _clsk) and Microsoft cookies on clarity.ms and bing.com (such as MUID); see Microsoft&#x27;s privacy statement.
+
+### First-party visit counter
+
+The site also runs a small counter of its own, Pulse, a script served from our own Cloudflare Worker (pulse.yaseenyk.workers.dev), to tell real visits from automated ones. It records the page address (without the query string), the referring site and campaign tags, country, device type, browser and system name, screen size, language, the name of your network provider, scroll depth, time on the page, page speed, which links and buttons were clicked, and a human-or-bot signal. Since 24 November 2026 it also records a few technical details: up to three script error messages per page (the message, script file and line), whether your browser translated the page and into which language, the connection type (such as 4g or 3g), how fast the page responded to a tap, layout jumps, and the name of a form that was sent or started but not sent (never what was typed; these sites have no forms today). It sets no cookies, never reads what you type or the values in input fields, and stores no IP address or browser string: the address is used in memory only, to limit abuse and to make a visitor code that changes every day (a one-way hash with a random salt that is deleted the next day), so visits cannot be linked across days. Records are deleted after 90 days. It switches itself off when your browser sends Do Not Track or Global Privacy Control, and on localhost. The data is used only to understand how the site is used.
+
+### Advertising
+
+This site does not show ads at the moment. We intend to use Google AdSense after approval. Once ads run, Google and its partners may use cookies to serve ads based on your visits to this and other websites. You can opt out of personalised advertising at adssettings.google.com, and learn how Google uses data from sites that use its services at policies.google.com/technologies/partner-sites. Where required by law (for example in the EEA and UK), personalised ads will be shown only after you consent. Ads will never change a tool&#x27;s result, and this policy will be updated before ads go live if anything above changes.
+
+### Your choices
+
+You can use the site with cookies blocked, opt out of Google Analytics with the add-on above, turn on Do Not Track or Global Privacy Control to switch off the visit counter, and ask a privacy question through the contact page. We do not collect accounts, names or email addresses through the tools. If you write to us, we use your address only to reply.
+
+### Children
+
+The tools are general-purpose and not aimed at children under 13, and we do not knowingly collect their data.
+
+### Contact
+
+Questions about this policy: see the contact page. The rules for using the site are in the terms of use.
+
+
+---
+
+# Terms of Use: StreamerOS Dev Tools
+
+URL: https://tools.streamerosai.com/terms/
+
+## Terms of Use
+
+These terms apply when you use StreamerOS Dev Tools ( https://tools.streamerosai.com). By using the site you agree to them. If you do not agree, please do not use it. Last updated: 16 November 2026.
+
+### What the site is
+
+StreamerOS Dev Tools is a free set of browser-based tools and explanatory guides, run by an individual. The tools run on your device. How the site treats information is described in the privacy policy.
+
+### Use as is, and accuracy
+
+The tools and guides are provided as they are, without warranties of any kind. We test the logic and state our formulas and assumptions on each page, but mistakes are possible and rules, rates and standards change. Check anything that matters before you rely on it.
+
+### Your data and your responsibility
+
+The tools process the text you paste in your browser. You are responsible for what you paste: do not use the tools on material you are not allowed to handle, and remember that Base64 is an encoding, not encryption, and offers no secrecy. Formatted or converted output should be checked before it goes into production systems.
+
+### Acceptable use
+
+Use the site lawfully. Do not attempt to disrupt it, overload it with automated requests, probe it for weaknesses, or use it to process material you have no right to handle. You are responsible for the data you put into a tool and for what you do with the result.
+
+### Content and ownership
+
+The text, design and code of the site belong to its owner unless stated otherwise, and third-party names and standards cited remain the property of their owners. You may link to any page. Please do not republish the guides or copy them in bulk without permission; short quotations with a link back are fine.
+
+### Links, ads and third parties
+
+Pages link to outside sources so you can check our work. We do not control those sites and are not responsible for them. If ads are shown, they are provided by third parties, are labelled as ads, and do not mean we endorse the advertiser.
+
+### Availability and liability
+
+The site may change or be unavailable at any time. To the extent the law allows, we are not liable for any loss arising from your use of, or inability to use, the site or from reliance on a result it gives. Nothing here limits any right you have by law that cannot be limited.
+
+### Changes to these terms
+
+We may update these terms. The date at the top shows the latest version, and continued use after a change means you accept it.
+
+### Contact
+
+Questions about these terms: see the contact page.
+
+
+---
+
+# Contact StreamerOS Dev Tools: Bugs and Tool Requests
+
+URL: https://tools.streamerosai.com/contact/
+
+## Contact
+
+Found a bug, a wrong result, or want a tool added? Tell us and include the input that caused the problem when you can. Messages go to the person who runs the site, and we aim to reply within a few working days.
+Email: contact@streamerosai.com
+
+### What helps most
+
+- The page address and what you expected to see.
+- The input that caused a wrong result, with anything private removed, and the browser you used.
+- For a mistake in a guide, the sentence and the source you believe says otherwise.
+
+### What we cannot do
+
+We cannot give personal financial, tax, legal or employment advice, check a specific document, or recover a file for you, because nothing you enter is uploaded to us. The site is run by one person, so replies can take a few days. Reports of wrong results are fixed first. If you do not want us to keep your email address, say so and we will delete the message once it is answered.

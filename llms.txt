@@ -1,0 +1,36 @@
+# StreamerOS Dev Tools
+
+> Free developer tools that run in your browser. Your input is never uploaded.
+
+Built and maintained by Yaseen Khatib, Full Stack AI Developer, Hyderabad, India (https://yk.streamerosai.com/).
+
+## Tools
+
+- [JSON Formatter & Beautifier](https://tools.streamerosai.com/json-formatter/): JSON formatter and pretty print online: beautify JSON with 2 or 4 spaces or tabs, sort keys, see the line and column of any error. Runs in your browser.
+- [JSON Viewer](https://tools.streamerosai.com/json-viewer/): JSON viewer online: browse JSON as a collapsible tree, copy the path to any value, and see exactly where invalid JSON breaks. Free and private, no upload.
+- [JSON Validator](https://tools.streamerosai.com/json-validator/): Validate JSON online and find the line and column of the error. Lists common error messages and fixes. Free; checked in your browser, no upload.
+- [JSON Minifier](https://tools.streamerosai.com/json-minifier/): Minify JSON online: strip spaces and line breaks to cut size, with before and after byte counts. Free; runs in your browser, nothing is uploaded.
+- [JSON Compare (JSON Diff)](https://tools.streamerosai.com/json-compare/): JSON diff tool: compare two JSON documents online and see every added, removed and changed value by path. Key order is ignored. Private, in your browser.
+- [JSON to CSV Converter](https://tools.streamerosai.com/json-to-csv/): Convert a JSON array to CSV online. Flattens nested objects, picks the delimiter and downloads a .csv file. Nothing is uploaded.
+- [Base64 Encode & Decode](https://tools.streamerosai.com/base64/): Encode text to Base64 or decode Base64 back to text online. UTF-8 and URL-safe supported, and everything runs in your browser.
+- [Base64 Decode](https://tools.streamerosai.com/base64-decode/): Decode Base64 to text online, including URL-safe Base64 and missing padding. Shows why a string fails to decode. Free; runs in your browser.
+
+## Guides
+
+- [All guides](https://tools.streamerosai.com/guides/)
+- [Why JSON.parse fails: the 6 errors behind most invalid JSON](https://tools.streamerosai.com/guides/json-parse-errors/): Trailing commas, single quotes, comments, unquoted keys, undefined and unescaped characters: what each error looks like and how to fix it.
+- [What Base64 is and when to use it](https://tools.streamerosai.com/guides/what-is-base64/): How Base64 turns bytes into text, why it makes data a third bigger, what the URL-safe variant is, and why it is not encryption.
+
+## How it works
+
+- Every tool runs in your browser. What you paste is not uploaded, and the site makes no network request that carries it.
+- The logic is plain functions in the site source, covered by unit tests (Vitest). No claim is made beyond what those tests check.
+
+## About
+
+- [About](https://tools.streamerosai.com/about/)
+- [Privacy](https://tools.streamerosai.com/privacy/)
+- [Terms](https://tools.streamerosai.com/terms/)
+- [Contact](https://tools.streamerosai.com/contact/)
+- [Full text of every page, one file](https://tools.streamerosai.com/llms-full.txt)
+- [Sitemap](https://tools.streamerosai.com/sitemap.xml)
